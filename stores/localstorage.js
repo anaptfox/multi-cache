@@ -17,10 +17,11 @@ var Memory = function() {
 }
 
 Memory.prototype.put = function(key, value, time) {
-  var self = this;
 
-  if (self.cache[key]) {
-    clearTimeout(self.cache[key].timeout);
+  // check localstorage for item and clear the timeout
+  if (window.localstorage.getItem(JSON.parse(key))) {
+    var item = window.localstorage.getItem(JSON.parse(key));
+    clearTimeout(item.timeout);
   }
 
   var record = {
@@ -28,22 +29,24 @@ Memory.prototype.put = function(key, value, time) {
     expire: time ? (time + now()) : null
   };
 
+  // set timeout for item to store in cache
   if (record.expire) {
     (function() {
-      var _self = self;
       var timeout = setTimeout(function() {
-        _self.del(key);
+        window.localstorage.delItem(key);
       }, time);
       record.timeout = timeout;
     })();
   }
 
-  self.cache[key] = record;
+  // store record to key to store in cache
+  window.localstorage.setItem(key, JSON.stringify(record)));
 }
 
+// delete item in local storage
 Memory.prototype.del = function(key) {
-  var self = this;
-  var record = self.cache[key];
+  var item = window.localstorage.getItem(JSON.parse(key));
+  var record = item;
 
   if (!record) {
     return false;
@@ -52,10 +55,11 @@ Memory.prototype.del = function(key) {
   clearTimeout(record.timeout);
 
   var isExpired = expired(record);
-  delete self.cache[key];
+  window.localstorage.delItem(key);
   return !isExpired;
 }
 
+// need to be completed
 Memory.prototype.clear = function() {
   var self = this;
 
@@ -67,34 +71,21 @@ Memory.prototype.clear = function() {
 }
 
 Memory.prototype.get = function(key) {
-  var self = this;
-  var record = self.cache[key];
+  var item = window.localstorage.getItem(JSON.parse(key));
+  var record = item;
   if (typeof record != "undefined") {
     if (!expired(record)) {
-      self.debug && ++self.hitCount;
+      item.debug && ++item.hitCount;
       return record.value;
     } else {
-      self.debug && ++self.missCount;
-      self.del(key);
+      item.debug && ++item.missCount;
+      window.localstorage.delItem(key);
     }
   }
   return null;
 }
 
-Memory.prototype.size = function() {
-  var self = this;
-  var size = 0,
-    key;
-  for (key in self.cache) {
-    if (self.cache.hasOwnProperty(key)) {
-      if (self.get(key) !== null) {
-        size++;
-      }
-    }
-  }
-  return size;
-}
-
+// need to be re-evaluated
 Memory.prototype.memsize = function() {
   var self = this;
   var size = 0,
@@ -108,13 +99,13 @@ Memory.prototype.memsize = function() {
 }
 
 Memory.prototype.hits = function() {
-  var self = this;
-  return self.hitCount;
+  var item = window.localstorage.getItem(JSON.parse(key));
+  return item.hitCount;
 }
 
 Memory.prototype.misses = function() {
-  var self = this;
-  return self.missCount;
+  var item = window.localstorage.getItem(JSON.parse(key));
+  return item.missCount;
 }
 
 Memory.shared = new Memory();
