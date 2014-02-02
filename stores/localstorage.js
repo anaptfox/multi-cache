@@ -27,6 +27,10 @@ var LocalStorage = function() {
 
 LocalStorage.prototype.put = function(key, value, time) {
 
+  var self = this;
+
+  var _self = self;
+
   var item = window.localstorage.getItem(key);
 
   // check localstorage for item and clear the timeout
@@ -97,29 +101,23 @@ LocalStorage.prototype.clear = function() {
 
 LocalStorage.prototype.get = function(key) {
 
-  var item = window.localstorage.getItem(key);
+  var self = this;
 
-  if (!item) {
-
-    return null;
-
-  }
-
-  var record = JSON.parse(item);
+  var record = self.cache[key];
 
   if (typeof record != "undefined") {
 
     if (!expired(record)) {
 
-      item.debug && ++item.hitCount;
+      self.debug && ++self.hitCount;
 
       return record.value;
 
     } else {
 
-      item.debug && ++item.missCount;
+      self.debug && ++self.missCount;
 
-      window.localstorage.removeItem(key);
+      self.del(key);
 
     }
 
