@@ -1,3 +1,6 @@
+var fs = require('fs-extra'),
+  cwd = process.cwd();
+
 function now() {
   return (new Date).getTime();
 }
@@ -6,127 +9,191 @@ function expired(record) {
   return record.expire && record.expire < now();
 }
 
-var Memory = function() {
+var File = function() {
   var self = this;
   self.cache = {};
   self.debug = false;
   self.hitCount = 0;
   self.missCount = 0;
 
+  fs.mkdirSync(path.join(cwd, "tmp"));
+
   return self;
 }
 
-Memory.prototype.put = function(key, value, time) {
+File.prototype.put = function(key, value, time) {
+
   var self = this;
 
-  if (self.cache[key]) {
-    clearTimeout(self.cache[key].timeout);
+  var cacheData;
+
+  var cacheFile = path.join(cwd, 'tmp', key + '.json');
+
+  if (fs.existsSync(cacheFile)) {
+
+    cacheData = require(cacheFile);
+
+    clearTimeout(cacheJson.timeout);
+
   }
 
   var record = {
+
     value: value,
+
     expire: time ? (time + now()) : null
+
   };
 
   if (record.expire) {
+
     (function() {
+
       var _self = self;
+
       var timeout = setTimeout(function() {
+
         _self.del(key);
+
       }, time);
+
       record.timeout = timeout;
+
     })();
+
   }
 
-  self.cache[key] = record;
+  cacheData = record;
+
+  fs.writeFileSync(cacheFile, JSON.stringify(cacheData, null, 4));
+
 }
 
-Memory.prototype.del = function(key) {
+File.prototype.del = function(key) {
+
   var self = this;
-  var record = self.cache[key];
+
+  var record;
+
+  var cacheFile = path.join(cwd, 'tmp', key + '.json');
+
+  if (fs.existsSync(cacheFile)) {
+
+    record = require(cacheFile);
+
+  } else {
+
+    return false;
+
+  }
 
   if (!record) {
+
     return false;
+
   }
 
   clearTimeout(record.timeout);
 
   var isExpired = expired(record);
-  delete self.cache[key];
+
+  fs.unlinkSync(cacheFile);
+
   return !isExpired;
+
 }
 
-Memory.prototype.clear = function() {
+File.prototype.clear = function() {
+
+  // Delete tmp folder
+  deleteFolderRecursive(path.join(cwd, "tmp"));
+  // Recreate empty folder
+  fs.mkdirSync(path.join(cwd, "tmp"));
+
+}
+
+File.prototype.get = function(key) {
+
   var self = this;
 
-  for (var key in self.cache) {
-    clearTimeout(self.cache[key].timeout);
-  }
+  var record;
 
-  self.cache = {};
-}
+  var cacheFile = path.join(cwd, 'tmp', key + '.json');
 
-Memory.prototype.get = function(key) {
-  var self = this;
-  var record = self.cache[key];
-  if (typeof record != "undefined") {
-    if (!expired(record)) {
-      self.debug && ++self.hitCount;
-      return record.value;
-    } else {
-      self.debug && ++self.missCount;
-      self.del(key);
-    }
-  }
-  return null;
-}
+  if (fs.existsSync(cacheFile)) {
 
-Memory.prototype.size = function() {
-  var self = this;
-  var size = 0,
-    key;
-  for (key in self.cache) {
-    if (self.cache.hasOwnProperty(key)) {
-      if (self.get(key) !== null) {
-        size++;
-      }
-    }
-  }
-  return size;
-}
+    record = require(cacheFile);
 
-Memory.prototype.memsize = function() {
-  var self = this;
-  var size = 0,
-    key;
-  for (key in self.cache) {
-    if (self.cache.hasOwnProperty(key)) {
-      size++;
-    }
-  }
-  return size;
-}
-
-Memory.prototype.hits = function() {
-  var self = this;
-  return self.hitCount;
-}
-
-Memory.prototype.misses = function() {
-  var self = this;
-  return self.missCount;
-}
-
-Memory.shared = new Memory();
-
-if (typeof(module) !== 'undefined' && typeof(module.exports) !== 'undefined') {
-  module.exports = Memory;
-} else {
-  if (typeof(define) === 'function' && define.amd) {
-    define([], function() {
-      return Memory;
-    });
   } else {
-    window.Memory = Memory;
+
+    return null;
+
   }
+
+  if (typeof record != "undefined") {
+
+    if (!expired(record)) {
+
+      self.debug && ++self.hitCount;
+
+      return record.value;
+
+    } else {
+
+      self.debug && ++self.missCount;
+
+      self.del(key);
+
+    }
+
+  }
+
+  return null;
+
 }
+
+File.prototype.size = function() {
+
+  var self = this;
+
+  var file_list = fs.readdirSync(path.join(cwd, 'tmp'));
+
+  return file_list.length;
+
+}
+
+
+File.prototype.hits = function() {
+
+  var self = this;
+
+  return self.hitCount;
+
+}
+
+File.prototype.misses = function() {
+
+  var self = this;
+
+  return self.missCount;
+
+}
+
+File.shared = new File();
+
+
+module.exports = File;
+
+var deleteFolderRecursive = function(path) {
+  if (fs.existsSync(path)) {
+    fs.readdirSync(path).forEach(function(file, index) {
+      var curPath = path + "/" + file;
+      if (fs.statSync(curPath).isDirectory()) { // recurse
+        deleteFolderRecursive(curPath);
+      } else { // delete file
+        fs.unlinkSync(curPath);
+      }
+    });
+    fs.rmdirSync(path);
+  }
+};
