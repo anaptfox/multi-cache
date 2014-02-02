@@ -1,24 +1,25 @@
 {
-  "name" : "tinycache",
-  "description" : "A simple in-memory cache in ~100 lines.",
-  "author" : "Andy Burke <aburke@bitflood.org>",
-  "url" : "https://github.com/andyburke/tinycache",
-  "contributors": [
-    {
-      "name": "Paul Tarjan",
-      "email": "npm@paulisageek.com",
-      "web": "https://github.com/ptarjan" 
-    }
-  ],
-  "keywords" : [
+  "name": "tinycache",
+  "description": "A simple in-memory cache in ~100 lines.",
+  "author": "Andy Burke <aburke@bitflood.org>",
+  "url": "https://github.com/andyburke/tinycache",
+  "contributors": [{
+    "name": "Paul Tarjan",
+    "email": "npm@paulisageek.com",
+    "web": "https://github.com/ptarjan"
+  }],
+  "keywords": [
     "cache",
     "in-memory",
     "storage"
   ],
-  "main" : "./tinycache.js",
-  "version" : "0.1.1",
-  "repository" : { 
-    "type" : "git", 
-    "url" : "git://github.com/andyburke/tinycache.git"
+  "dependencies": {
+    "fs-extra": "latest"
+  },
+  "main": "./tinycache.js",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/andyburke/tinycache.git"
   }
 }

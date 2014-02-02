@@ -1,4 +1,5 @@
 var fs = require('fs-extra'),
+  path = require('path'),
   cwd = process.cwd();
 
 function now() {
@@ -9,6 +10,22 @@ function expired(record) {
   return record.expire && record.expire < now();
 }
 
+var timeouts = {};
+var counter = 0;
+
+function setTimeoutReturnsId(callback, delay) {
+  var current = counter++;
+  timeouts[current] = setTimeout(function() {
+    timeouts[current] = null;
+    callback();
+  }, delay);
+  return current;
+}
+
+function getTimeoutFromId(id) {
+  return timeouts[id];
+}
+
 var File = function() {
   var self = this;
   self.cache = {};
@@ -16,7 +33,9 @@ var File = function() {
   self.hitCount = 0;
   self.missCount = 0;
 
-  fs.mkdirSync(path.join(cwd, "tmp"));
+  if (!fs.existsSync(path.join(cwd, "tmp"))) {
+    fs.mkdirSync(path.join(cwd, "tmp"));
+  }
 
   return self;
 }
@@ -33,7 +52,7 @@ File.prototype.put = function(key, value, time) {
 
     cacheData = require(cacheFile);
 
-    clearTimeout(cacheJson.timeout);
+    clearTimeout(getTimeoutFromId(cacheData.timeout));
 
   }
 
@@ -51,7 +70,7 @@ File.prototype.put = function(key, value, time) {
 
       var _self = self;
 
-      var timeout = setTimeout(function() {
+      var timeout = setTimeoutReturnsId(function() {
 
         _self.del(key);
 
@@ -64,6 +83,8 @@ File.prototype.put = function(key, value, time) {
   }
 
   cacheData = record;
+
+  console.log(cacheData);
 
   fs.writeFileSync(cacheFile, JSON.stringify(cacheData, null, 4));
 
@@ -93,7 +114,7 @@ File.prototype.del = function(key) {
 
   }
 
-  clearTimeout(record.timeout);
+  clearTimeout(getTimeoutFromId(record.timeout));
 
   var isExpired = expired(record);
 
