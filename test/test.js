@@ -7,19 +7,20 @@ describe('multi-cache', function() {
   before(function(done) {
     cache = new Cache({
       'L1': {
-        engine: 'file',
+        engine: 'memory',
         options: {},
       },
       'L2': {
-        engine: 'mongo',
+        engine: 'file',
         options: {}
       }
     });
+    //cache.clear();
     done();
   });
 
   after(function(done) {
-    cache.clear('test');
+    cache.clear();
     done();
   });
 
@@ -46,7 +47,6 @@ describe('multi-cache', function() {
   it('should store zero', function(done) {
     cache.set('test2', 0, function(err) {
       if (err) return done(err);
-      console.log("Stored");
       cache.get('test2', function(err, data) {
         console.log("got");
         if (err) return done(err);
@@ -104,7 +104,7 @@ describe('multi-cache', function() {
       cache.get('test6', function(err, data) {
         if (err) return done(err);
         assert.equal(data, value);
-        cache.clear('', function(err) {
+        cache.clear(function(err) {
           if (err) return done(err);
           cache.get('test6', function(err, data) {
             if (err) return done(err);
@@ -119,7 +119,7 @@ describe('multi-cache', function() {
   it('should expire key', function(done) {
     this.timeout(0);
     cache.set('test1', {
-      a: 1
+      a: 2
     }, 1, function(err) {
       if (err) return done(err);
       setTimeout(function() {
