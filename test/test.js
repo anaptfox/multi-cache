@@ -2,10 +2,19 @@ var assert = require('assert'),
   Cache = require('../'),
   cache;
 
-describe('cacheman-file', function() {
+describe('multi-cache', function() {
 
   before(function(done) {
-    cache = new Cache({}, {});
+    cache = new Cache({
+      'L1': {
+        engine: 'file',
+        options: {},
+      },
+      'L2': {
+        engine: 'mongo',
+        options: {}
+      }
+    });
     done();
   });
 
@@ -37,7 +46,9 @@ describe('cacheman-file', function() {
   it('should store zero', function(done) {
     cache.set('test2', 0, function(err) {
       if (err) return done(err);
+      console.log("Stored");
       cache.get('test2', function(err, data) {
+        console.log("got");
         if (err) return done(err);
         assert.strictEqual(data, 0);
         done();

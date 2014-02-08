@@ -15,11 +15,13 @@
     "file",
     "redis cache",
     "mongo cache",
-    "mongodb cache"
+    "mongodb cache",
     "storage"
   ],
   "dependencies": {
-    "fs-extra": "latest"
+    "async": "latest",
+    "cacheman-memory": "~0.1.x",
+    "ms": "~0.6.1"
   },
   "main": "index.js",
   "scripts": {
@@ -27,7 +29,10 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "mocha": "*"
+    "mocha": "~1.12.0",
+    "cacheman-redis": "~0.1.x",
+    "cacheman-mongo": "~0.1.x",
+    "cacheman-file": "latest"
   },
   "version": "0.0.1",
   "repository": {
