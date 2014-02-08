@@ -1,25 +1,37 @@
 {
-  "name": "tinycache",
-  "description": "A simple in-memory cache in ~100 lines.",
-  "author": "Andy Burke <aburke@bitflood.org>",
-  "url": "https://github.com/andyburke/tinycache",
+  "name": "multi-cache",
+  "description": "Multi Caching implimented in Node.js",
+  "author": "Taron Foxworth <taronfoxworth@gmail.com>",
+  "url": "https://github.com/taronfoxworth/multi-cache",
   "contributors": [{
-    "name": "Paul Tarjan",
-    "email": "npm@paulisageek.com",
-    "web": "https://github.com/ptarjan"
+    "name": "Jeremiah Harlan",
+    "email": "jeremiah.harlan@gmail.com"
   }],
   "keywords": [
     "cache",
+    "multi-cache",
+    "multi",
     "in-memory",
+    "file",
+    "redis cache",
+    "mongo cache",
+    "mongodb cache"
     "storage"
   ],
   "dependencies": {
     "fs-extra": "latest"
   },
-  "main": "./tinycache.js",
-  "version": "0.1.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "mocha": "*"
+  },
+  "version": "0.0.1",
   "repository": {
     "type": "git",
-    "url": "git://github.com/andyburke/tinycache.git"
+    "url": "git://github.com/taronfoxworth/multi-cache.git"
   }
 }
