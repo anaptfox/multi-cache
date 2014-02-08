@@ -15,7 +15,6 @@ describe('multi-cache', function() {
         options: {}
       }
     });
-    //cache.clear();
     done();
   });
 
@@ -47,6 +46,7 @@ describe('multi-cache', function() {
   it('should store zero', function(done) {
     cache.set('test2', 0, function(err) {
       if (err) return done(err);
+      console.log("Stored");
       cache.get('test2', function(err, data) {
         console.log("got");
         if (err) return done(err);
@@ -119,7 +119,7 @@ describe('multi-cache', function() {
   it('should expire key', function(done) {
     this.timeout(0);
     cache.set('test1', {
-      a: 2
+      a: 1
     }, 1, function(err) {
       if (err) return done(err);
       setTimeout(function() {
