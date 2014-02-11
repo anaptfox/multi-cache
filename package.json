@@ -33,7 +33,7 @@
     "cacheman-redis": "~0.1.x",
     "cacheman-mongo": "~0.1.x",
     "cacheman-file": "latest",
-    "cacheman-memory": "git://github.com/harlanj/cacheman-memory"
+    "cacheman-memory": "latest"
   },
   "version": "0.0.1",
   "repository": {
