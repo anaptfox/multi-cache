@@ -3,10 +3,12 @@
   "description": "Multi Caching implimented in Node.js",
   "author": "Taron Foxworth <taronfoxworth@gmail.com>",
   "url": "https://github.com/taronfoxworth/multi-cache",
-  "contributors": [{
-    "name": "Jeremiah Harlan",
-    "email": "jeremiah.harlan@gmail.com"
-  }],
+  "contributors": [
+    {
+      "name": "Jeremiah Harlan",
+      "email": "jeremiah.harlan@gmail.com"
+    }
+  ],
   "keywords": [
     "cache",
     "multi-cache",
@@ -19,9 +21,10 @@
     "storage"
   ],
   "dependencies": {
-    "async": "latest",
+    "contra": "latest",
     "cacheman-memory": "~0.1.x",
-    "ms": "~0.6.1"
+    "ms": "~0.6.1",
+    "q": "~1.0.0"
   },
   "main": "index.js",
   "scripts": {
@@ -29,9 +32,11 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "mocha": "~1.12.0",
+    "jshint": "~2.1.4",
+    "mocha": "~1.17.0",
+    "should": "~3.0.1",
+    "istanbul": "~0.2.4",
     "cacheman-redis": "~0.1.x",
-    "cacheman-mongo": "~0.1.x",
     "cacheman-file": "latest",
     "cacheman-memory": "latest"
   },
